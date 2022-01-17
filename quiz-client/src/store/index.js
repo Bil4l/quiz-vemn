@@ -17,8 +17,12 @@ export default new Vuex.Store({
             state.gameRoomId = id
         },
 
-        updateGameState(state){
-            state.gameOn = !state.gameOn;
+        toggleGameOn(state){
+            state.gameOn = true;
+        },
+
+        toggleGameOff(state){
+            state.gameOn = false;
         },
 
         setCurrentQuestion(state,question){

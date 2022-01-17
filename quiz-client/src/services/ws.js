@@ -5,6 +5,15 @@ import Timer from './Timer'
 
 const URL = "ws://localhost:3000"
 
+const getNextQuestion =  function (){
+    pendingTimer.cancel();
+    console.log("On est prêt à recevoir la suivante!")
+    quizDispatcher.connection.send(JSON.stringify({event:"quizState",content:true}));
+}
+
+const pendingTimer = new Timer(undefined,10*1000,getNextQuestion);
+
+
 
 const quizDispatcher = new WebSocketDispatcher(URL);
 
@@ -23,24 +32,22 @@ const dispPlayer = function(players){
 
 const startQuiz = function(question){
     store.commit('startQuiz');
-    store.commit('updateGameState');
+    store.commit('toggleGameOn');
     store.commit('setCurrentQuestion',question);
 };
 
-const getNextQuestion =  function (){
-    quizDispatcher.connection.send(JSON.stringify({event:"quizState",content:true}));
-}
+
 
 const toNextQuestion = function (){
-    store.commit('updateGameState');
+    store.commit('toggleGameOff');
     store.commit('setCurrentQuestion','');
-    const pendingTimer = new Timer(undefined,10*1000,getNextQuestion);
     pendingTimer.launch();
     
 }
 
 const finishQuiz = function() {
-    store.commit('updateGameState');
+    
+    store.commit('toggleGameOff');
     store.commit('stopQuiz');
     store.commit('setCurrentQuestion','Quiz terminé!');
 }
