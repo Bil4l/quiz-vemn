@@ -1,0 +1,21 @@
+doctype
+html(lang='fr')
+    head
+        meta(charset='utf-8')
+        link(rel='stylesheet', href='/stylesheets/style.css', type='text/css')
+        title
+    body
+        h1  Questions list
+        table 
+            tr 
+                th Statement 
+                th Answer
+            tr 
+                each question in questionList
+                    tr
+                        td  #{question.statement}
+                        td  #{question.answer} 
+                        td  
+                            a(href=`./delete/${question._id}`) Delete
+
+    

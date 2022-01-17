@@ -1,0 +1,17 @@
+doctype
+html(lang='fr')
+    head
+        meta(charset='utf-8')
+        link(rel='stylesheet', href='/stylesheets/style.css', type='text/css')
+        title
+    body
+        h1 Quiz
+        table 
+            tr 
+                th Statement 
+                th Answer
+            tr 
+                each question in quiz
+                    tr
+                        td  #{question.statement}
+                        td  #{question.answer} 
