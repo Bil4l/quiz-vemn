@@ -1,6 +1,7 @@
 import {WebSocketDispatcher} from './client.dispatcher'
 import store from '../store'
 import Timer from './Timer'
+import {nanoid} from 'nanoid'
 
 
 const URL = "ws://localhost:3000"
@@ -34,6 +35,10 @@ const startQuiz = function(question){
     store.commit('startQuiz');
     store.commit('toggleGameOn');
     store.commit('setCurrentQuestion',question);
+    store.commit('increaseQuestionCounter');
+    store.commit('addAnswer', {content:"--------------------------------------",sentTime:nanoid()})
+    store.commit('addAnswer', {content:`QUESTION ${store.state.questionCounter}`,sentTime:nanoid()})
+    store.commit('addAnswer', {content:"--------------------------------------",sentTime:nanoid()})
 };
 
 

@@ -11,6 +11,7 @@ export default new Vuex.Store({
         currentQuestion: '',
         answersList: [],
         playersList:[],
+        questionCounter:0,
     },
     mutations:{
         joinGameRoom(state, id){
@@ -27,6 +28,10 @@ export default new Vuex.Store({
 
         setCurrentQuestion(state,question){
             state.currentQuestion = question
+        },
+
+        increaseQuestionCounter(state){
+            state.questionCounter++;
         },
 
         startQuiz(state){
