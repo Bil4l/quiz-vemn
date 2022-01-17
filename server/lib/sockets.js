@@ -1,5 +1,8 @@
 const WebSocket = require('ws');
-const nanoid = require('nanoid').nanoid;
+const { customAlphabet } = require('nanoid');
+const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const nanoid = customAlphabet(alphabet, 6);
+
 
 const dispatcher = require('./dispatcher');
 const {generateQuiz} = require('../lib/generateQuiz');
@@ -9,7 +12,7 @@ let rooms = new Map();
 
 function connection(ws) {
 
-  ws.id = nanoid(4);
+  ws.id = nanoid(8);
 
   function loadQuestion(quizState){
     const currentRoom = rooms.get(ws.roomId);
@@ -76,7 +79,7 @@ function connection(ws) {
     } else {
       // La salle n'existe pas, on la crée
 
-      let newRoomId = nanoid(8);
+      let newRoomId = nanoid(5);
       let newRoom = new Room(false,true,await generateQuiz(2));
 
       ws.isHost = true;
