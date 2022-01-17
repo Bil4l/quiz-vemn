@@ -28,17 +28,19 @@ function connection(ws) {
 
   function checkAnswer(answer) {
     const currentRoom = rooms.get(ws.roomId);
-    console.log(currentRoom.quiz.length);
-    console.log(currentRoom.questionCounter);
+
     if (currentRoom.isQuizzOn && answer===currentRoom.quiz[currentRoom.questionCounter].answer) {
       
-      ws.score +=1;
+      
       ws.send(JSON.stringify({event:"goodAnswer", content:true}));
 
-      currentRoom.correctAnswers = currentRoom.correctAnswers + 1 ;
-      currentRoom.sendAll(JSON.stringify({event:"answer",content:`${ws.username} a trouvé`}));
+      if (!(currentRoom.correctAnswers.includes(ws))){
+        ws.score +=1;
+        currentRoom.correctAnswers.push(ws);
+        currentRoom.sendAll(JSON.stringify({event:"answer",content:`${ws.username} a trouvé`}));
+      }
       
-      if (currentRoom.players.length === currentRoom.correctAnswers && currentRoom.isQuizzOn){
+      if (currentRoom.players.length === currentRoom.correctAnswers.length && currentRoom.isQuizzOn){
         currentRoom.cancelTimer();
         currentRoom.goToNextQuestion();
       }

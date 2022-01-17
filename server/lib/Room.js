@@ -5,7 +5,7 @@ class Room {
       this.quiz = quiz;
       this.timerID = undefined;
       this.questionCounter = 0;
-      this.correctAnswers = 0;
+      this.correctAnswers = [];
       this.players = []
     }
     
@@ -44,7 +44,7 @@ class Room {
           })}))
           this.sendAll(JSON.stringify({event:"nextQuestion",content:true}));
           this.questionCounter ++;
-          this.correctAnswers = 0;
+          this.correctAnswers = [];
           this.isQuizzOn = false;
           this.timerID = undefined;
         }
