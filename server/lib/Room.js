@@ -11,7 +11,12 @@ class Room {
     
   
     addPlayer(player) {
-      this.players.push(player);
+      if(this.players.map(player=>{return player.username}).includes(player.username)){
+        player.username = `${player.username}${Math.floor(Math.random()*100)}`;
+        this.players.push(player);
+      }else{
+        this.players.push(player);
+      }
     }
   
     sendAll(message){

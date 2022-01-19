@@ -13,10 +13,7 @@
 
 import quizDispatcher from '../services/ws'
 
-
-
 export default {
-
     methods: {
         onSubmit(){
             if (this.username){
@@ -25,6 +22,8 @@ export default {
             }
         }
     },
+
+
     data() {
         return {
             username:"",
