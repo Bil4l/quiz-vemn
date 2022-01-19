@@ -2,16 +2,19 @@
 
 ## Quiz database
 
-- Rajouter des nouvelles questions 
-- Ajouter un tag "catégorie"
-- Simplifier les noms (états-unis grrr)
+ Rajouter des nouvelles questions 
+
+ Ajouter un tag "catégorie"
+
+ Simplifier les noms (états-unis grrr)
 
 ## Server side
 
 ## Client side
 
-- Ajouter le délai entre chaque question
-- Ajouter le timer pendant le temps de réponse
+<s>Ajouter le délai entre chaque question.
+
+<s>Ajouter le timer pendant le temps de réponse.
 
 
 

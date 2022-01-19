@@ -42,8 +42,11 @@ class Room {
       this.cancelTimer();
       if (this.questionCounter + 1 === this.quiz.length){
         this.sendAll(JSON.stringify({event:"quizIsOver",content:true}));
+        this.sendAll(JSON.stringify({event:"playersScore", content:this.players.map(player=>{
+          return {username:player.username,connectionTime:player.connectionTime,score:player.score}
+        })}))
       }else if(this.questionCounter < this.quiz.length){
-        if(this.isQuizzOn ){
+        if(this.isQuizzOn){
           this.sendAll(JSON.stringify({event:"playersScore", content:this.players.map(player=>{
             return {username:player.username,connectionTime:player.connectionTime,score:player.score}
           })}))

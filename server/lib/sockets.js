@@ -16,12 +16,13 @@ function connection(ws) {
 
   function loadQuestion(quizState){
     const currentRoom = rooms.get(ws.roomId);
-    
-    if (ws.isHost = true){
+    console.log(ws.isHost ? "Host" : "Pas Host");
+    if (ws.isHost){
       if (currentRoom.questionCounter < currentRoom.quiz.length){
         currentRoom.isQuizzOn = true;
         currentRoom.isReachable = false;
 
+        console.log("On  envoie la question")
         currentRoom.sendAll(JSON.stringify({event:"question",content:currentRoom.quiz[currentRoom.questionCounter].statement}));
         
         currentRoom.launchTimer();
@@ -35,11 +36,11 @@ function connection(ws) {
     if (currentRoom.isQuizzOn && answer===currentRoom.quiz[currentRoom.questionCounter].answer) {
       
       
-      ws.send(JSON.stringify({event:"goodAnswer", content:true}));
-
+      
       if (!(currentRoom.correctAnswers.includes(ws))){
-        ws.score +=1;
+        ws.send(JSON.stringify({event:"goodAnswer", content:true}));
         currentRoom.correctAnswers.push(ws);
+        ws.score += (8-currentRoom.correctAnswers.length) ;
         currentRoom.sendAll(JSON.stringify({event:"answer",content:`${ws.username} a trouvé`}));
       }
       
