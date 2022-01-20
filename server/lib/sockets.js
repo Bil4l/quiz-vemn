@@ -47,7 +47,7 @@ function connection(ws) {
         currentRoom.correctAnswers.push(ws);
         let scoreAdded = (8-currentRoom.correctAnswers.length);
         ws.score += scoreAdded  ;
-        currentRoom.sendToAll("answer",`${ws.username} trouve la réponse (+${scoreAdded} pts)`);
+        currentRoom.sendToAll("playerSuccess",`${ws.username} trouve la réponse (+${scoreAdded} pts)`);
       }
       
       if (currentRoom.players.length === currentRoom.correctAnswers.length && currentRoom.isQuizzOn){
@@ -55,7 +55,7 @@ function connection(ws) {
         currentRoom.goToNextQuestion();
       }
     } else {
-      currentRoom.sendToAll("answer",`${ws.username} : ${answer}`);
+      currentRoom.sendToAll("answer",`${ws.username} > ${answer}`);
     }
     
   };

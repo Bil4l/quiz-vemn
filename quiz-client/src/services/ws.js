@@ -1,8 +1,6 @@
 import {WebSocketDispatcher} from './client.dispatcher'
 import store from '../store'
 import Timer from './Timer'
-import {nanoid} from 'nanoid'
-
 
 const URL = "ws://localhost:3000"
 
@@ -36,12 +34,8 @@ const startQuiz = function(question){
     store.commit('toggleGameOn');
     store.commit('setCurrentQuestion',question);
     store.commit('increaseQuestionCounter');
-    store.commit('addAnswer', {content:"--------------------------------------",sentTime:nanoid()})
-    store.commit('addAnswer', {content:`QUESTION ${store.state.questionCounter}`,sentTime:nanoid()})
-    store.commit('addAnswer', {content:"--------------------------------------",sentTime:nanoid()})
+    store.commit('addAnswer', {content:`\u2B50 QUESTION ${store.state.questionCounter}`,sentTime:Math.random(),type:"question"});
 };
-
-
 
 const toNextQuestion = function (){
     store.commit('toggleGameOff');
@@ -51,22 +45,33 @@ const toNextQuestion = function (){
 }
 
 const finishQuiz = function() {
-    
     store.commit('toggleGameOff');
     store.commit('stopQuiz');
     store.commit('setCurrentQuestion','Quiz terminé!');
 }
 
 const dispAnswer = function(answer){
-    store.commit('addAnswer', {content: answer, sentTime:performance.now()})
+    store.commit('addAnswer', {content: answer, sentTime:performance.now(),type:"regular"})
 }
+
+const dispPlayerSuccess = function(answer){
+    store.commit('addAnswer', {content: answer, sentTime:performance.now(),type:"playerSuccess"})
+}
+
+const showCorrectAnswer = function(answer){
+    store.commit('addAnswer',{content: answer, sentTime:performance.now(),type:"showCorrectAnswer"});
+};
+
 
 quizDispatcher.on("roomId",joinGameRoom);
 
 quizDispatcher.on("question",startQuiz);
 quizDispatcher.on("nextQuestion",toNextQuestion);
+quizDispatcher.on("showCorrectAnswer", showCorrectAnswer);
 
+quizDispatcher.on("playerSuccess",dispPlayerSuccess);
 quizDispatcher.on("answer", dispAnswer);
+
 
 quizDispatcher.on("playerJoined",dispPlayer);
 quizDispatcher.on("playerLeft",dispPlayer);

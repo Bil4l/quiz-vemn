@@ -54,8 +54,8 @@ export default {
     margin-top:3%;
 }
 
-.player-move{
-    transition: transform 5s;
+.players-move{
+    transition: transform 1s;
 }
     
 </style>

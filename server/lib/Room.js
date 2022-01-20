@@ -63,11 +63,11 @@ class Room {
       if (this.questionCounter + 1 === this.quiz.length){
         this.sendToAll("quizIsOver",true);
         this.sendPlayerList("playersScore");
-        this.sendToAll("answer" ,`BRAVO! La réponse était ${this.quiz[this.questionCounter].answer}`);
+        this.sendToAll("showCorrectAnswer" ,`TEMPS ÉCOULÉ! La réponse était : "${this.quiz[this.questionCounter].answer}"`);
       }else if(this.questionCounter < this.quiz.length){
         if(this.isQuizzOn){
           this.sendPlayerList("playersScore");
-          this.sendToAll("answer" ,`BRAVO! La réponse était ${this.quiz[this.questionCounter].answer}`);
+          this.sendToAll("showCorrectAnswer" ,`TEMPS ÉCOULÉ! La réponse était : "${this.quiz[this.questionCounter].answer}"`);
           this.sendToAll("nextQuestion",true);
           this.questionCounter ++;
           this.correctAnswers = [];
