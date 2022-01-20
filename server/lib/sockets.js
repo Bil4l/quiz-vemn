@@ -3,12 +3,19 @@ const { customAlphabet } = require('nanoid');
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const nanoid = customAlphabet(alphabet, 6);
 
-
 const dispatcher = require('./dispatcher');
 const {generateQuiz} = require('../lib/generateQuiz');
 const Room = require('./Room');
 
 let rooms = new Map();
+
+function playerFromWS(ws,roomId,username,isHost){
+  ws.roomId = roomId;
+  ws.username = username;
+  ws.score = 0;
+  ws.isHost = isHost;
+  ws.connectionTime = performance.now();
+}
 
 function connection(ws) {
 
@@ -22,8 +29,7 @@ function connection(ws) {
         currentRoom.isQuizzOn = true;
         currentRoom.isReachable = false;
 
-        console.log("On  envoie la question")
-        currentRoom.sendAll(JSON.stringify({event:"question",content:currentRoom.quiz[currentRoom.questionCounter].statement}));
+        currentRoom.sendToAll("question", currentRoom.quiz[currentRoom.questionCounter].statement);
         
         currentRoom.launchTimer();
       }
@@ -36,12 +42,12 @@ function connection(ws) {
     if (currentRoom.isQuizzOn && answer===currentRoom.quiz[currentRoom.questionCounter].answer) {
       
       
-      
       if (!(currentRoom.correctAnswers.includes(ws))){
-        ws.send(JSON.stringify({event:"goodAnswer", content:true}));
+        currentRoom.sendToPlayer(ws,"goodAnswer", true);
         currentRoom.correctAnswers.push(ws);
-        ws.score += (8-currentRoom.correctAnswers.length) ;
-        currentRoom.sendAll(JSON.stringify({event:"answer",content:`${ws.username} a trouvé`}));
+        let scoreAdded = (8-currentRoom.correctAnswers.length);
+        ws.score += scoreAdded  ;
+        currentRoom.sendToAll("answer",`${ws.username} trouve la réponse (+${scoreAdded} pts)`);
       }
       
       if (currentRoom.players.length === currentRoom.correctAnswers.length && currentRoom.isQuizzOn){
@@ -49,61 +55,29 @@ function connection(ws) {
         currentRoom.goToNextQuestion();
       }
     } else {
-      currentRoom.sendAll(JSON.stringify({event:"answer",content:`${ws.username} : ${answer}`}));
+      currentRoom.sendToAll("answer",`${ws.username} : ${answer}`);
     }
     
   };
 
-
   async function joinRoom(content){
     
-    if (rooms.has(content.id)&&rooms.get(content.id).isReachable) {
+    if (rooms.has(content.id)&&rooms.get(content.id).isReachable && rooms.get(content.id).players.length < 6) {
       // La salle existe déjà on la rejoint
       let existingRoom = rooms.get(content.id);
 
-      ws.isHost = false;
-      ws.roomId = content.id
-      ws.connectionTime = performance.now();
-      ws.username = content.username;
-      ws.score = 0;
+      playerFromWS(ws,content.id,content.username,false);
       existingRoom.addPlayer(ws);
 
-      existingRoom.sendAll(JSON.stringify(
-        {event:"playerJoined", content:existingRoom.players.map(player=>{
-          return {username:player.username,connectionTime:player.connectionTime,score:player.score};
-        })}
-      ));
-
-      existingRoom.sendAll(JSON.stringify({event:"answer",content:`${ws.username} a rejoint la partie`}));
-
-      ws.send(JSON.stringify({event:"roomId",content:content.id}));
     } else {
       // La salle n'existe pas, on la crée
 
       let newRoomId = nanoid(5);
-      let newRoom = new Room(false,true,await generateQuiz(2));
+      let newRoom = new Room(false,true,await generateQuiz(2),newRoomId);
 
-      ws.isHost = true;
-      ws.roomId = newRoomId;
-      ws.connectionTime = performance.now();
-      ws.username = content.username;
-      ws.score = 0;
-
-      newRoom.addPlayer(ws);
+      playerFromWS(ws,newRoomId,content.username,true);
       rooms.set(newRoomId,newRoom);
-
-
-      newRoom.sendAll(JSON.stringify(
-        {event:"playerJoined", content:newRoom.players.map(player=>{
-          return {username:player.username,connectionTime:player.connectionTime,score:player.score}; 
-        })}
-      ));
-      
-      newRoom.sendAll(JSON.stringify({event:"answer",content:`${ws.username} a rejoint la partie`}));
-
-      ws.send(JSON.stringify({event:"roomId",content:newRoomId}));
-
-      
+      newRoom.addPlayer(ws);
     }
   }
 
@@ -119,20 +93,13 @@ function connection(ws) {
   ws.on('close',()=>{
     if (ws.roomId){
       const currentRoom = rooms.get(ws.roomId);
-      currentRoom.sendOthers(ws,JSON.stringify({event:"answer",content:`${ws.username} a quitté la partie!`}));
       currentRoom.removePlayer(ws);
-      currentRoom.sendAll(JSON.stringify(
-        {event:"playerLeft", content:currentRoom.players.map(player=>{
-          return {username:player.username,connectionTime:player.connectionTime, score:player.score}; 
-        })}
-      ));
 
       if (currentRoom.players.length === 0){
         rooms.delete(currentRoom.id);
       };
     }
   });
-
 }
 
 function  init(server) {
