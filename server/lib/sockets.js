@@ -43,10 +43,11 @@ function connection(ws) {
       
       
       if (!(currentRoom.correctAnswers.includes(ws))){
-        currentRoom.sendToPlayer(ws,"goodAnswer", true);
+        
         currentRoom.correctAnswers.push(ws);
-        let scoreAdded = (8-currentRoom.correctAnswers.length);
-        ws.score += scoreAdded  ;
+        const scoreAdded = (8-currentRoom.correctAnswers.length);
+        ws.score += scoreAdded;
+        currentRoom.sendToPlayer(ws,"goodAnswer", scoreAdded);
         currentRoom.sendToAll("playerSuccess",`${ws.username} trouve la réponse (+${scoreAdded} pts)`);
       }
       

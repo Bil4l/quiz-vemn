@@ -12,6 +12,8 @@ export default new Vuex.Store({
         answersList: [],
         playersList:[],
         questionCounter:0,
+        goodAnswer:false,
+        scoreAdded:0,
     },
     mutations:{
         joinGameRoom(state, id){
@@ -52,6 +54,11 @@ export default new Vuex.Store({
 
         rankPlayers(state){
             state.playersList.sort((a,b)=>parseInt(b.score)-parseInt(a.score));
-        }
+        },
+
+        playerHasGoodAnswer(state,score){
+            state.goodAnswer = !state.goodAnswer;
+            state.scoreAdded = score;
+        },
     }
 })

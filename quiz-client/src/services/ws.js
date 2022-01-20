@@ -62,6 +62,13 @@ const showCorrectAnswer = function(answer){
     store.commit('addAnswer',{content: answer, sentTime:performance.now(),type:"showCorrectAnswer"});
 };
 
+const triggerScoreAnimation = function(score){
+    store.commit('playerHasGoodAnswer',score);
+    const animationTimer = new Timer (undefined,2.6*1000,()=>{store.commit('playerHasGoodAnswer');});
+    animationTimer.launch();
+    
+};
+
 
 quizDispatcher.on("roomId",joinGameRoom);
 
@@ -71,6 +78,7 @@ quizDispatcher.on("showCorrectAnswer", showCorrectAnswer);
 
 quizDispatcher.on("playerSuccess",dispPlayerSuccess);
 quizDispatcher.on("answer", dispAnswer);
+quizDispatcher.on("goodAnswer", triggerScoreAnimation);
 
 
 quizDispatcher.on("playerJoined",dispPlayer);
